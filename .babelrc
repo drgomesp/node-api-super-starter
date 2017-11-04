@@ -1,0 +1,13 @@
+{
+  "presets": [
+    "env"
+  ],
+  "plugins": [
+    "transform-class-properties",
+    "transform-object-rest-spread",
+    ["module-alias", [
+      { "expose": "routes", "src": "src/routes"},
+      { "expose": "utils", "src": "src/utils"}
+    ]]
+  ]
+}
