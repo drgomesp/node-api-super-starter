@@ -8,19 +8,7 @@ import compression from 'compression';
 import routes from 'routes';
 import config from './config';
 import cors from 'utils/cors';
-// import logger, { stream } from 'utils/logger';
-// import { accessLogger, errorLogger } from 'utils/loggerExpressWinston';
-import { existsOrCreate } from 'utils/file';
-
-const logsFolder = require("path").join(__dirname, '../logs');
-const accessLog = require("path").join(logsFolder, 'access-log.log');
-const errorLog = require("path").join(logsFolder, 'error-log.log');
-const nrLog = require("path").join(logsFolder, 'newrelic_agent.log');
-require("mkdirp").sync(logsFolder);
-existsOrCreate(nrLog);
-existsOrCreate(accessLog);
-existsOrCreate(errorLog);
-
+import logger from 'utils/logger';
 
 const app = express();
 
@@ -28,24 +16,12 @@ const app = express();
 app.use(helmet(config.helmet));
 
 // GZip
-app.use(compression({threshold: 512}));
+app.use(compression({
+  threshold: 512
+}));
 
 // logger middleware
-// app.use(morgan("combined", { stream }));
-// app.use(require('express-bunyan-logger').errorLogger());
-app.use(require('express-bunyan-logger')({
-  streams: [{
-    level: 'debug',
-    format: ":remote-address - :user-agent[major] custom logger",
-    stream: process.stdout
-  }, {
-    level: 'info',
-    stream: require('fs').createWriteStream(require('path').join(__dirname, '../logs/access-log.log'))
-  }, {
-    level: 'error',
-    stream: require('fs').createWriteStream(require('path').join(__dirname, '../logs/error-log.log'))
-  }]
-}));
+app.use(logger);
 
 // CORS
 app.use(cors);
@@ -54,7 +30,7 @@ app.use(cors);
 app.use('/', routes);
 
 app.listen(config.port, () => {
-  console.log(chalk.cyan(`App listening on port ${config.port}!`));
+  console.log(chalk.cyan(`Listening on port ${config.port}!`));
 });
 
 app.on('error', function onError(error) {
@@ -62,9 +38,9 @@ app.on('error', function onError(error) {
     throw error;
   }
 
-  const bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+  const bind = typeof port === 'string' ?
+    'Pipe ' + port :
+    'Port ' + port;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
@@ -80,4 +56,3 @@ app.on('error', function onError(error) {
       throw error;
   }
 });
-

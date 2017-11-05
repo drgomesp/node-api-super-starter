@@ -8,8 +8,7 @@ const chalk = require('chalk');
 const babelRcPath = path.join(__dirname, '..', '.babelrc');
 const babelRc = JSON.parse(fs.readFileSync(babelRcPath, 'utf-8'));
 
-require('babel-register')(Object.assign(
-  {},
+require('babel-register')(Object.assign({},
   babelRc, {
     ignore: /\/(build|node_modules)\//
   }
